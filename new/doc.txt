@@ -1,0 +1,26 @@
+Property
+   ↓
+Property Node (hierarchical tree)
+   ↓
+Node Detail Tables
+   ↓
+Offerings
+
+//property_node_table
+id	node_type	parent
+1	BUILDING	NULL
+2	WING	    1
+3	FLOOR	    2
+4	UNIT	    3
+5	UNIT	    3
+
+ZOHO CRM                    YOUR PLATFORM
+────────────────            ────────────────────────
+Source of truth for:        Source of truth for:
+
+✅ Leads                    ✅ Properties
+✅ Contacts                 ✅ Offerings
+✅ Deal pipeline            ✅ Shortlists
+✅ Communications           ✅ Proposals
+✅ Call logs                ✅ Site visits
+                            ✅ Documents

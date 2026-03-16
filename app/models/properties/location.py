@@ -12,3 +12,5 @@ class Location(Base):
     city_division_name = Column(String(100), nullable=False)
     
     city = relationship("City", back_populates="locations")
+    properties = relationship("Property", back_populates="location")
+    sublocations = relationship("Sublocation", back_populates="location")

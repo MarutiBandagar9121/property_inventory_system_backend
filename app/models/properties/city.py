@@ -10,4 +10,5 @@ class City(Base):
     state = Column(String(100), nullable=False)
     short_name = Column(String(100), unique=True, nullable=False)
 
-    location = relationship("Location", back_populates="city")
+    locations = relationship("Location", back_populates="city")
+    properties = relationship("Property", back_populates="city")

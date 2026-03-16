@@ -11,3 +11,4 @@ class Sublocation(Base):
     location_id = Column(Integer, ForeignKey("locations.id"), nullable=False)
     
     location = relationship("Location", back_populates="sublocations")
+    properties = relationship("Property", back_populates="sublocation")

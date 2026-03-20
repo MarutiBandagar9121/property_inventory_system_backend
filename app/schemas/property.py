@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel
 from typing import Optional
 
@@ -76,7 +78,7 @@ class PropertyUpdate(BaseModel):
 # ── Response schema ───────────────────────────────────────────────────────────
 
 class PropertyResponse(BaseModel):
-    id: int
+    id: UUID
     project_name: str
     project_grade: str
     city: CityRef

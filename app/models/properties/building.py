@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID
 class Building(Base):
     __tablename__ = "buildings"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(UUID, primary_key=True, index=True)
     node_id = Column(UUID, ForeignKey("property_nodes.id"), unique=True, nullable=False)
     building_name = Column(String(100), nullable=False)
     grade = Column(String(100), nullable=False)

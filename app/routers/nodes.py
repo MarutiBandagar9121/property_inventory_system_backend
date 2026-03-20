@@ -23,7 +23,7 @@ router = APIRouter(tags=["Property Nodes"])
     "/properties/{property_id}/nodes/tree",
     response_model=PropertyTreeResponse,
 )
-def get_property_tree(property_id: int, db: Session = Depends(get_db)):
+def get_property_tree(property_id: UUID, db: Session = Depends(get_db)):
     tree = node_service.get_property_tree(db, property_id)
     if tree is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
@@ -61,7 +61,7 @@ def delete_node(node_id: UUID, db: Session = Depends(get_db)):
     response_model=BuildingResponse,
     status_code=status.HTTP_201_CREATED,
 )
-def create_building(property_id: int, data: BuildingCreate, db: Session = Depends(get_db)):
+def create_building(property_id: UUID, data: BuildingCreate, db: Session = Depends(get_db)):
     try:
         return node_service.create_building(db, property_id, data)
     except ValueError as e:

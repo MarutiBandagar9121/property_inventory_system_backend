@@ -3,6 +3,8 @@
 
 ### Properties
 - `POST /api/v1/properties`: Create a new property
+<!-- To be developed -->
+- `POST /api/v1/properties/bulk`: Create a new property in bulk
 - `GET /api/v1/properties`: List all properties
 <!-- To be developed -->
 - `GET /api/v1/properties/types/{type_id}` : Get all properties of a specific type 
@@ -14,10 +16,10 @@
 - `GET /api/v1/properties/{property_id}/nodes/tree`: Get the property tree
 - `GET /api/v1/nodes/{node_id}`: Get a specific node
 - `PATCH /api/v1/nodes/{node_id}`: Update a node
-- `DELETE /api/v1/nodes/{id}`: Delete a node
+- `DELETE /api/v1/nodes/{node_id}`: Delete a node
 
 ### Building Node
-- `POST /api/v1//properties/{property_id}/buildings` : Create a new building node
+- `POST /api/v1/properties/{property_id}/buildings` : Create a new building node
 - `GET /api/v1/nodes/{node_id}/building` : Get a specific building node
 - `PATCH /api/v1/nodes/{node_id}/building`: Update a building node
 

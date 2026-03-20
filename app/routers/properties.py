@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -15,6 +17,13 @@ def create_property(data: PropertyCreate, db: Session = Depends(get_db)):
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
+@router.post("/bulk", response_model=list[PropertyResponse], status_code=status.HTTP_201_CREATED)
+def create_properties_bulk(data: list[PropertyCreate], db: Session = Depends(get_db)):
+    try:
+        return property_service.create_properties_bulk(db, data)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
 
 @router.get("/", response_model=list[PropertyResponse])
 def list_properties(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
@@ -22,7 +31,7 @@ def list_properties(skip: int = 0, limit: int = 20, db: Session = Depends(get_db
 
 
 @router.get("/{property_id}", response_model=PropertyResponse)
-def get_property(property_id: int, db: Session = Depends(get_db)):
+def get_property(property_id: UUID, db: Session = Depends(get_db)):
     prop = property_service.get_property(db, property_id)
     if not prop:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")
@@ -30,7 +39,7 @@ def get_property(property_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/{property_id}", response_model=PropertyResponse)
-def update_property(property_id: int, data: PropertyUpdate, db: Session = Depends(get_db)):
+def update_property(property_id: UUID, data: PropertyUpdate, db: Session = Depends(get_db)):
     try:
         prop = property_service.update_property(db, property_id, data)
     except ValueError as e:
@@ -41,6 +50,6 @@ def update_property(property_id: int, data: PropertyUpdate, db: Session = Depend
 
 
 @router.delete("/{property_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_property(property_id: int, db: Session = Depends(get_db)):
+def delete_property(property_id: UUID, db: Session = Depends(get_db)):
     if not property_service.delete_property(db, property_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Property not found")

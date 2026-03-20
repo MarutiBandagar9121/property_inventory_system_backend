@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import select
 
@@ -50,7 +50,7 @@ def _validate_parent(
     db: Session,
     parent_node_id: uuid.UUID | None,
     node_type_name: str,
-    property_id: int,
+    property_id: UUID,
 ) -> None:
     allowed = _ALLOWED_PARENTS[node_type_name]
 
@@ -91,7 +91,7 @@ def _node_to_info(node: PropertyNode) -> dict:
 
 def _make_node(
     db: Session,
-    property_id: int,
+    property_id: uuid.UUID,
     node_type_name: str,
     node_name: str,
     sequence_order: int,
@@ -119,7 +119,7 @@ def _make_node(
 
 # ── Tree ──────────────────────────────────────────────────────────────────────
 
-def get_property_tree(db: Session, property_id: int) -> dict | None:
+def get_property_tree(db: Session, property_id: uuid.UUID) -> dict | None:
     if not db.get(Property, property_id):
         return None
 
@@ -189,7 +189,7 @@ def delete_node(db: Session, node_id: uuid.UUID) -> bool:
 
 # ── Building ──────────────────────────────────────────────────────────────────
 
-def create_building(db: Session, property_id: int, data: BuildingCreate) -> dict:
+def create_building(db: Session, property_id: uuid.UUID, data: BuildingCreate) -> dict:
     if not db.get(Property, property_id):
         raise ValueError(f"Property {property_id} not found")
 

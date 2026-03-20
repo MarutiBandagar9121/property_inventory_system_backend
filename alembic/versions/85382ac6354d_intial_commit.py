@@ -1,8 +1,8 @@
-"""intial setup
+"""intial commit
 
-Revision ID: f7b8854d42db
+Revision ID: 85382ac6354d
 Revises: 
-Create Date: 2026-03-17 11:14:32.202534
+Create Date: 2026-03-18 17:20:09.380906
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'f7b8854d42db'
+revision: str = '85382ac6354d'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -37,14 +37,12 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
-    op.create_index(op.f('ix_node_types_id'), 'node_types', ['id'], unique=False)
     op.create_table('property_types',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
-    op.create_index(op.f('ix_property_types_id'), 'property_types', ['id'], unique=False)
     op.create_table('locations',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
@@ -66,33 +64,38 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_sublocations_id'), 'sublocations', ['id'], unique=False)
     op.create_table('properties',
-    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('project_name', sa.String(length=100), nullable=False),
-    sa.Column('project_grade', sa.String(length=100), nullable=False),
+    sa.Column('project_grade', sa.String(length=100), nullable=True),
     sa.Column('city_id', sa.Integer(), nullable=False),
     sa.Column('location_id', sa.Integer(), nullable=False),
-    sa.Column('sublocation_id', sa.Integer(), nullable=False),
-    sa.Column('latitude', sa.Float(), nullable=False),
-    sa.Column('longitude', sa.Float(), nullable=False),
-    sa.Column('google_map_url', sa.String(length=500), nullable=False),
+    sa.Column('sublocation_id', sa.Integer(), nullable=True),
+    sa.Column('property_type_id', sa.Integer(), nullable=False),
+    sa.Column('latitude', sa.Numeric(precision=9, scale=6), nullable=True),
+    sa.Column('longitude', sa.Numeric(precision=9, scale=6), nullable=True),
+    sa.Column('google_map_url', sa.String(length=500), nullable=True),
     sa.Column('address_line1', sa.String(length=100), nullable=False),
     sa.Column('address_line2', sa.String(length=100), nullable=True),
-    sa.Column('total_property_area', sa.Float(), nullable=False),
-    sa.Column('total_property_area_unit', sa.String(length=20), nullable=False),
-    sa.Column('property_sanction_type', sa.String(length=100), nullable=False),
-    sa.Column('tenant_profile', sa.String(length=500), nullable=True),
-    sa.Column('property_type_id', sa.Integer(), nullable=False),
+    sa.Column('total_property_area', sa.Numeric(precision=10, scale=2), nullable=True),
+    sa.Column('total_property_area_unit', sa.String(length=20), nullable=True),
+    sa.Column('property_sanction_type', sa.String(length=100), nullable=True),
+    sa.Column('tenant_profile', sa.String(length=200), nullable=True),
     sa.ForeignKeyConstraint(['city_id'], ['cities.id'], ),
     sa.ForeignKeyConstraint(['location_id'], ['locations.id'], ),
     sa.ForeignKeyConstraint(['property_type_id'], ['property_types.id'], ),
     sa.ForeignKeyConstraint(['sublocation_id'], ['sublocations.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_properties_id'), 'properties', ['id'], unique=False)
+    op.create_index('idx_property_city_location', 'properties', ['city_id', 'location_id'], unique=False)
+    op.create_index('idx_property_type_city', 'properties', ['property_type_id', 'city_id'], unique=False)
+    op.create_index(op.f('ix_properties_city_id'), 'properties', ['city_id'], unique=False)
+    op.create_index(op.f('ix_properties_location_id'), 'properties', ['location_id'], unique=False)
+    op.create_index(op.f('ix_properties_property_type_id'), 'properties', ['property_type_id'], unique=False)
+    op.create_index(op.f('ix_properties_sublocation_id'), 'properties', ['sublocation_id'], unique=False)
     op.create_table('property_nodes',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('node_name', sa.String(length=100), nullable=False),
-    sa.Column('property_id', sa.Integer(), nullable=False),
+    sa.Column('property_id', sa.UUID(), nullable=False),
     sa.Column('node_type_id', sa.Integer(), nullable=False),
     sa.Column('parent_node_id', sa.UUID(), nullable=True),
     sa.Column('sequence_order', sa.Integer(), nullable=False),
@@ -104,9 +107,13 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['property_id'], ['properties.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_property_nodes_id'), 'property_nodes', ['id'], unique=False)
+    op.create_index('idx_node_ordering', 'property_nodes', ['parent_node_id', 'sequence_order'], unique=False)
+    op.create_index('idx_property_node_hierarchy', 'property_nodes', ['property_id', 'parent_node_id', 'sequence_order'], unique=False)
+    op.create_index(op.f('ix_property_nodes_node_type_id'), 'property_nodes', ['node_type_id'], unique=False)
+    op.create_index(op.f('ix_property_nodes_parent_node_id'), 'property_nodes', ['parent_node_id'], unique=False)
+    op.create_index(op.f('ix_property_nodes_property_id'), 'property_nodes', ['property_id'], unique=False)
     op.create_table('buildings',
-    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('node_id', sa.UUID(), nullable=False),
     sa.Column('building_name', sa.String(length=100), nullable=False),
     sa.Column('grade', sa.String(length=100), nullable=False),
@@ -250,17 +257,24 @@ def downgrade() -> None:
     op.drop_table('floors')
     op.drop_index(op.f('ix_buildings_id'), table_name='buildings')
     op.drop_table('buildings')
-    op.drop_index(op.f('ix_property_nodes_id'), table_name='property_nodes')
+    op.drop_index(op.f('ix_property_nodes_property_id'), table_name='property_nodes')
+    op.drop_index(op.f('ix_property_nodes_parent_node_id'), table_name='property_nodes')
+    op.drop_index(op.f('ix_property_nodes_node_type_id'), table_name='property_nodes')
+    op.drop_index('idx_property_node_hierarchy', table_name='property_nodes')
+    op.drop_index('idx_node_ordering', table_name='property_nodes')
     op.drop_table('property_nodes')
-    op.drop_index(op.f('ix_properties_id'), table_name='properties')
+    op.drop_index(op.f('ix_properties_sublocation_id'), table_name='properties')
+    op.drop_index(op.f('ix_properties_property_type_id'), table_name='properties')
+    op.drop_index(op.f('ix_properties_location_id'), table_name='properties')
+    op.drop_index(op.f('ix_properties_city_id'), table_name='properties')
+    op.drop_index('idx_property_type_city', table_name='properties')
+    op.drop_index('idx_property_city_location', table_name='properties')
     op.drop_table('properties')
     op.drop_index(op.f('ix_sublocations_id'), table_name='sublocations')
     op.drop_table('sublocations')
     op.drop_index(op.f('ix_locations_id'), table_name='locations')
     op.drop_table('locations')
-    op.drop_index(op.f('ix_property_types_id'), table_name='property_types')
     op.drop_table('property_types')
-    op.drop_index(op.f('ix_node_types_id'), table_name='node_types')
     op.drop_table('node_types')
     op.drop_index(op.f('ix_cities_id'), table_name='cities')
     op.drop_table('cities')

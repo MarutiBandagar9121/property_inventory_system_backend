@@ -9,7 +9,7 @@ from datetime import datetime
 class NodeInfo(BaseModel):
     id: UUID
     node_name: str
-    property_id: int
+    property_id: UUID
     node_type_id: int
     node_type_name: str       # resolved name e.g. "BUILDING", "WING" etc.
     parent_node_id: Optional[UUID]
@@ -43,7 +43,7 @@ NodeTreeItem.model_rebuild()
 
 
 class PropertyTreeResponse(BaseModel):
-    property_id: int
+    property_id: UUID
     nodes: list[NodeTreeItem]
 
 

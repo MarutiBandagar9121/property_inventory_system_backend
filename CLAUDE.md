@@ -1,7 +1,7 @@
-# EstateHub – FastAPI Backend
+# Property Inventory Management System – FastAPI Backend
 
 ## What This Project Is
-Commercial real estate platform backend API for a real estate advisory/brokerage firm. Serves two frontends: a customer app (Next.js) and an employee app (Reactjs).
+Commercial real estate platform backend API for a real estate advisory/brokerage firm. Currently serves one frontend: an employee/admin app (React) for internal staff. A customer-facing app may be added in the future.
 
 ## Tech Stack
 - **Framework:** FastAPI (Python 3.13)

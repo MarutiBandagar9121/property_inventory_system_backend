@@ -1,3 +1,5 @@
+# An FastAPI App for property inventory app
+
 # create python venev
 - python -m venv venv
 - pip install -r requirements.txt

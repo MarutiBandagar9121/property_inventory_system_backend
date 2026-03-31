@@ -6,3 +6,8 @@ class LocationResponse(BaseModel):
     city_id: int
     location_type_business: str
     city_division_name: str
+
+class SublocationsResponse(BaseModel):
+    id: int
+    name: str
+    location_id: int

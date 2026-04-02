@@ -8,8 +8,8 @@ class Property(Base):
     __tablename__ = "properties"
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    project_name = Column(String(100), nullable=False)
-    project_grade = Column(String(100), nullable=True)
+    property_name = Column(String(100), nullable=False)
+    property_grade = Column(String(100), nullable=True)
     
     # Foreign Keys - ALL indexed for JOIN performance
     city_id = Column(Integer, ForeignKey("cities.id"), nullable=False, index=True)
@@ -23,9 +23,8 @@ class Property(Base):
     google_map_url = Column(String(500), nullable=True)
     address_line1 = Column(String(100), nullable=False)
     address_line2 = Column(String(100), nullable=True)
+    postal_code = Column(String(20), nullable=True)
     total_property_area = Column(Numeric(10,2), nullable=True)
-    total_property_area_unit = Column(String(20), nullable=True)
-    property_sanction_type = Column(String(100), nullable=True)
     tenant_profile = Column(String(200), nullable=True)
 
     # Relationships

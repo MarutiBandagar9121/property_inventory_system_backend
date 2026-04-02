@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import properties, nodes, cities, locations
+from app.routers import api_router
 
 app = FastAPI(title="EstateHub API", version="1.0.0")
 
@@ -12,12 +12,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(properties.router, prefix="/api/v1")
-app.include_router(nodes.router, prefix="/api/v1")
-app.include_router(cities.router, prefix="/api/v1")
-app.include_router(locations.router, prefix="/api/v1")
-
-
+app.include_router(api_router)
 
 @app.get("/")
 def home():

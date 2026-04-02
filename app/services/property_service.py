@@ -1,25 +1,11 @@
 from uuid import UUID
 
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 
 from app.models.properties import Property, City, Location, Sublocation, PropertyType
 from app.schemas.property import PropertyCreate, PropertyUpdate
 
-
-def _load_property(db: Session, property_id: UUID) -> Property | None:
-    """Fetch a property with all relationships eagerly loaded."""
-    stmt = (
-        select(Property)
-        .options(
-            selectinload(Property.city),
-            selectinload(Property.location),
-            selectinload(Property.sublocation),
-            selectinload(Property.property_type),
-        )
-        .where(Property.id == property_id)
-    )
-    return db.execute(stmt).scalar_one_or_none()
 
 
 def _validate_location_hierarchy(
@@ -46,7 +32,7 @@ def _validate_location_hierarchy(
 
 
 def get_property(db: Session, property_id: UUID) -> Property | None:
-    return _load_property(db, property_id)
+    return db.get(Property, property_id)
 
 
 def get_properties(
@@ -58,12 +44,7 @@ def get_properties(
     property_type_ids: list[int] | None = None,
 ) -> dict:
     # Start with base statements — one for data, one for count
-    data_stmt = select(Property).options(
-        selectinload(Property.city),
-        selectinload(Property.location),
-        selectinload(Property.sublocation),
-        selectinload(Property.property_type),
-    )
+    data_stmt = select(Property)
     count_stmt = select(func.count()).select_from(Property)
     print("Request to get all properties received")
     if city_ids is not None:
@@ -100,7 +81,7 @@ def create_property(db: Session, data: PropertyCreate) -> Property:
     db.add(prop)
     db.commit()
     db.refresh(prop)
-    return _load_property(db, prop.id)
+    return prop
 
 def create_properties_bulk(db: Session, data: list[PropertyCreate]) -> list[Property]:
     property_type_ids = {d.property_type_id for d in data}
@@ -146,22 +127,10 @@ def create_properties_bulk(db: Session, data: list[PropertyCreate]) -> list[Prop
     # Bulk insert — flush to get DB-generated UUIDs, then commit
     properties = [Property(**d.model_dump()) for d in data]
     db.add_all(properties)
-    db.flush()
-    ids = [prop.id for prop in properties]
     db.commit()
-
-    # Single query to load all inserted properties with relationships
-    stmt = (
-        select(Property)
-        .options(
-            selectinload(Property.city),
-            selectinload(Property.location),
-            selectinload(Property.sublocation),
-            selectinload(Property.property_type),
-        )
-        .where(Property.id.in_(ids))
-    )
-    return list(db.execute(stmt).scalars().all())
+    for prop in properties:
+        db.refresh(prop)
+    return properties
 
 
 def update_property(db: Session, property_id: UUID, data: PropertyUpdate) -> Property | None:
@@ -183,7 +152,8 @@ def update_property(db: Session, property_id: UUID, data: PropertyUpdate) -> Pro
         setattr(prop, key, value)
 
     db.commit()
-    return _load_property(db, property_id)
+    db.refresh(prop)
+    return prop
 
 
 def delete_property(db: Session, property_id: UUID) -> bool:

@@ -7,7 +7,7 @@ from app.database import get_db
 from app.schemas.property import PropertyCreate, PropertyListResponse, PropertyTypeModel, PropertyUpdate, PropertyResponse
 from app.services import property_service
 
-router = APIRouter(prefix="/properties", tags=["Properties"])
+router = APIRouter(tags=["Properties"])
 
 # upload property
 @router.post("/", response_model=PropertyResponse, status_code=status.HTTP_201_CREATED)

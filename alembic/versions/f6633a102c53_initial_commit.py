@@ -1,8 +1,8 @@
-"""intial commit
+"""initial commit
 
-Revision ID: 85382ac6354d
+Revision ID: f6633a102c53
 Revises: 
-Create Date: 2026-03-18 17:20:09.380906
+Create Date: 2026-04-02 00:13:39.843876
 
 """
 from typing import Sequence, Union
@@ -12,11 +12,10 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '85382ac6354d'
+revision: str = 'f6633a102c53'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
-
 
 def upgrade() -> None:
     """Upgrade schema."""
@@ -65,8 +64,8 @@ def upgrade() -> None:
     op.create_index(op.f('ix_sublocations_id'), 'sublocations', ['id'], unique=False)
     op.create_table('properties',
     sa.Column('id', sa.UUID(), nullable=False),
-    sa.Column('project_name', sa.String(length=100), nullable=False),
-    sa.Column('project_grade', sa.String(length=100), nullable=True),
+    sa.Column('property_name', sa.String(length=100), nullable=False),
+    sa.Column('property_grade', sa.String(length=100), nullable=True),
     sa.Column('city_id', sa.Integer(), nullable=False),
     sa.Column('location_id', sa.Integer(), nullable=False),
     sa.Column('sublocation_id', sa.Integer(), nullable=True),
@@ -76,9 +75,8 @@ def upgrade() -> None:
     sa.Column('google_map_url', sa.String(length=500), nullable=True),
     sa.Column('address_line1', sa.String(length=100), nullable=False),
     sa.Column('address_line2', sa.String(length=100), nullable=True),
+    sa.Column('postal_code', sa.String(length=20), nullable=True),
     sa.Column('total_property_area', sa.Numeric(precision=10, scale=2), nullable=True),
-    sa.Column('total_property_area_unit', sa.String(length=20), nullable=True),
-    sa.Column('property_sanction_type', sa.String(length=100), nullable=True),
     sa.Column('tenant_profile', sa.String(length=200), nullable=True),
     sa.ForeignKeyConstraint(['city_id'], ['cities.id'], ),
     sa.ForeignKeyConstraint(['location_id'], ['locations.id'], ),
